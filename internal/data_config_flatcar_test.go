@@ -9,9 +9,10 @@ import (
 // Flatcar variant, v1.2.0-experimental
 
 const flatcarV12expResource = `
-data "ct_config" "flatcar" {
+data "butane_config" "flatcar" {
   pretty_print = true
   strict = true
+  experimental = true
   content = <<EOT
 ---
 variant: flatcar
@@ -41,7 +42,7 @@ const flatcarExpExpected = `{
       "tls": {}
     },
     "timeouts": {},
-    "version": "3.6.0-experimental"
+    "version": "3.7.0-experimental"
   },
   "kernelArguments": {},
   "passwd": {
@@ -79,7 +80,7 @@ func TestButaneConfig_Flatcar_v1_2exp(t *testing.T) {
 			{
 				Config: flatcarV12expResource,
 				Check: r.ComposeTestCheckFunc(
-					r.TestCheckResourceAttr("data.ct_config.flatcar", "rendered", flatcarExpExpected),
+					r.TestCheckResourceAttr("data.butane_config.flatcar", "rendered", flatcarExpExpected),
 				),
 			},
 		},

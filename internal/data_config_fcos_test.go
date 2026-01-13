@@ -7,16 +7,17 @@ import (
 	r "github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-// Fedora CoreOS variant, v1.7.0-experimental
+// Fedora CoreOS variant, v1.8.0-experimental
 
 const fedoraCoreOSV17expResource = `
-data "ct_config" "fedora-coreos" {
+data "butane_config" "fedora-coreos" {
   pretty_print = true
   strict = true
+  experimental = true
   content = <<EOT
 ---
 variant: fcos
-version: 1.7.0-experimental
+version: 1.8.0-experimental
 storage:
   luks:
     - name: data
@@ -42,7 +43,7 @@ const ignitionV36expExpected = `{
       "tls": {}
     },
     "timeouts": {},
-    "version": "3.6.0-experimental"
+    "version": "3.7.0-experimental"
   },
   "kernelArguments": {},
   "passwd": {
@@ -80,7 +81,7 @@ func TestButaneConfig_FCOSv1_7exp(t *testing.T) {
 			{
 				Config: fedoraCoreOSV17expResource,
 				Check: r.ComposeTestCheckFunc(
-					r.TestCheckResourceAttr("data.ct_config.fedora-coreos", "rendered", ignitionV36expExpected),
+					r.TestCheckResourceAttr("data.butane_config.fedora-coreos", "rendered", ignitionV36expExpected),
 				),
 			},
 		},
