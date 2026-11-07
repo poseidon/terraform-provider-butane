@@ -1,24 +1,25 @@
-# terraform-provider-ct
-[![GoDoc](https://pkg.go.dev/badge/github.com/poseidon/terraform-provider-ct.svg)](https://pkg.go.dev/github.com/poseidon/terraform-provider-ct)
-[![Workflow](https://github.com/poseidon/terraform-provider-ct/actions/workflows/test.yaml/badge.svg)](https://github.com/poseidon/terraform-provider-ct/actions/workflows/test.yaml?query=branch%3Amain)
-![Downloads](https://img.shields.io/github/downloads/poseidon/terraform-provider-ct/total)
+# terraform-provider-butane
+
+[![GoDoc](https://pkg.go.dev/badge/github.com/poseidon/terraform-provider-butane.svg)](https://pkg.go.dev/github.com/poseidon/terraform-provider-butane)
+[![Workflow](https://github.com/poseidon/terraform-provider-butane/actions/workflows/test.yaml/badge.svg)](https://github.com/poseidon/terraform-provider-butane/actions/workflows/test.yaml?query=branch%3Amain)
+![Downloads](https://img.shields.io/github/downloads/poseidon/terraform-provider-butane/total)
 [![Sponsors](https://img.shields.io/github/sponsors/poseidon?logo=github)](https://github.com/sponsors/poseidon)
 [![Mastodon](https://img.shields.io/badge/follow-news-6364ff?logo=mastodon)](https://fosstodon.org/@poseidon)
 
-`terraform-provider-ct` allows Terraform to validate a [Butane config](https://coreos.github.io/butane/specs/) and transpile to an [Ignition config](https://coreos.github.io/ignition/) for machine consumption.
+`terraform-provider-butane` allows Terraform to validate a [Butane config](https://coreos.github.io/butane/specs/) and transpile to an [Ignition config](https://coreos.github.io/ignition/) for machine consumption.
 
 ## Usage
 
-Configure the config transpiler provider (e.g. `providers.tf`).
+Configure the Butane provider (e.g. `providers.tf`).
 
 ```tf
-provider "ct" {}
+provider "butane" {}
 
 terraform {
   required_providers {
-    ct = {
-      source  = "poseidon/ct"
-      version = "0.14.0"
+    butane = {
+      source  = "poseidon/butane"
+      version = "0.15.0"
     }
   }
 }
@@ -46,10 +47,10 @@ passwd:
         - ssh-key foo
 ```
 
-Define a `ct_config` data source with strict validation.
+Define a `butane_config` data source with strict validation.
 
 ```tf
-data "ct_config" "worker" {
+data "butane_config" "worker" {
   content      = file("worker.yaml")
   strict       = true
   pretty_print = false
@@ -64,7 +65,7 @@ data "ct_config" "worker" {
 Optionally, template the `content`.
 
 ```tf
-data "ct_config" "worker" {
+data "butane_config" "worker" {
   content = templatefile("worker.yaml", {
     ssh_authorized_key = "ssh-ed25519 AAAA...",
   })
@@ -72,11 +73,11 @@ data "ct_config" "worker" {
 }
 ```
 
-Render the `ct_config` as Ignition for use by machine instances.
+Render the `butane_config` as Ignition for use by machine instances.
 
 ```tf
 resource "aws_instance" "worker" {
-  user_data = data.ct_config.worker.rendered
+  user_data = data.butane_config.worker.rendered
 }
 ```
 
@@ -86,11 +87,43 @@ Run `terraform init` to ensure plugin version requirements are met.
 $ terraform init
 ```
 
+## Migration
+
+Starting with v0.15.0, the provider is named `poseidon/butane`. Update your provider configuration:
+
+```hcl
+terraform {
+  required_providers {
+    butane = {
+      source  = "poseidon/butane"
+      version = "~> 0.15.0"
+    }
+  }
+}
+```
+
+Rename any `provider "ct"` blocks to `provider "butane"`, and replace `ct_config` with `butane_config` in data source declarations and references:
+
+```hcl
+data "butane_config" "worker" {
+  content = file("worker.yaml")
+  strict  = true
+}
+
+resource "aws_instance" "worker" {
+  user_data = data.butane_config.worker.rendered
+}
+```
+
+Run `terraform init -upgrade`, then review `terraform plan` before applying.
+
 ## Requirements
 
 * Terraform v0.13+ [installed](https://www.terraform.io/downloads.html)
 
 ## Versions
+
+The version history below describes releases of the original `poseidon/ct` provider.
 
 Butane configs are converted to the current (according to this provider) stable Ignition config and merged together. For example, `poseidon/ct` `v0.12.0` would convert a Butane Config with `variant: fcos` and `version: 1.2.0` to an Ignition config with version `v3.3.0`. This relies on Ignition's [forward compatibility](https://github.com/coreos/ignition/blob/main/config/v3_3/config.go#L61).
 

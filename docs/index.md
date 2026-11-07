@@ -1,19 +1,19 @@
 # config-transpiler Provider
 
-`terraform-provider-ct` allows Terraform to validate a [Butane config](https://coreos.github.io/butane/specs/) and transpile to an [Ignition config](https://coreos.github.io/ignition/) for machine consumption.
+`terraform-provider-butane` allows Terraform to validate a [Butane config](https://coreos.github.io/butane/specs/) and transpile to an [Ignition config](https://coreos.github.io/ignition/) for machine consumption.
 
 ## Usage
 
-Configure the config transpiler provider (e.g. `providers.tf`).
+Configure the Butane provider (e.g. `providers.tf`).
 
 ```tf
-provider "ct" {}
+provider "butane" {}
 
 terraform {
   required_providers {
-    ct = {
-      source  = "poseidon/ct"
-      version = "0.14.0"
+    butane = {
+      source  = "poseidon/butane"
+      version = "0.15.0"
     }
   }
 }
@@ -41,10 +41,10 @@ passwd:
         - ssh-key foo
 ```
 
-Define a `ct_config` data source with strict validation.
+Define a `butane_config` data source with strict validation.
 
 ```tf
-data "ct_config" "worker" {
+data "butane_config" "worker" {
   content      = file("worker.yaml")
   strict       = true
   pretty_print = false
@@ -59,7 +59,7 @@ data "ct_config" "worker" {
 Optionally, template the `content`.
 
 ```tf
-data "ct_config" "worker" {
+data "butane_config" "worker" {
   content = templatefile("worker.yaml", {
     ssh_authorized_key = "ssh-ed25519 AAAA...",
   })
@@ -67,11 +67,11 @@ data "ct_config" "worker" {
 }
 ```
 
-Render the `ct_config` as Ignition for use by machine instances.
+Render the `butane_config` as Ignition for use by machine instances.
 
 ```tf
 resource "aws_instance" "worker" {
-  user_data = data.ct_config.worker.rendered
+  user_data = data.butane_config.worker.rendered
 }
 ```
 
@@ -81,3 +81,32 @@ Run `terraform init` to ensure plugin version requirements are met.
 $ terraform init
 ```
 
+## Migration
+
+Starting with v0.15.0, the provider is named `poseidon/butane`. Update your provider configuration:
+
+```hcl
+terraform {
+  required_providers {
+    butane = {
+      source  = "poseidon/butane"
+      version = "~> 0.15.0"
+    }
+  }
+}
+```
+
+Rename any `provider "ct"` blocks to `provider "butane"`, and replace `ct_config` with `butane_config` in data source declarations and references:
+
+```hcl
+data "butane_config" "worker" {
+  content = file("worker.yaml")
+  strict  = true
+}
+
+resource "aws_instance" "worker" {
+  user_data = data.butane_config.worker.rendered
+}
+```
+
+Run `terraform init -upgrade`, then review `terraform plan` before applying.

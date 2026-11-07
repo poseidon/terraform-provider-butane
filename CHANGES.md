@@ -1,8 +1,13 @@
-# terraform-provider-ct
+# terraform-provider-butane
 
 Notable changes between releases.
 
 ## Latest
+
+## v0.15.0
+
+* Rename the provider to `poseidon/butane` and the data source to `butane_config`
+* Continue the existing release series under `terraform-provider-butane`
 
 ## v0.14.0
 
