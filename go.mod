@@ -1,4 +1,4 @@
-module github.com/poseidon/terraform-provider-ct
+module github.com/poseidon/terraform-provider-butane
 
 go 1.26.0
 

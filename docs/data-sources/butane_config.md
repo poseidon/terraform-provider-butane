@@ -1,11 +1,11 @@
-# ct_config Data Source
+# butane_config Data Source
 
 Validate a [Butane config](https://coreos.github.io/butane/specs/) and transpile it to an [Ignition config](https://coreos.github.io/ignition/) for machine consumption.
 
 ## Usage
 
 ```hcl
-data "ct_config" "worker" {
+data "butane_config" "worker" {
   content      = file("worker.yaml")
   strict       = true
   pretty_print = false
@@ -17,7 +17,7 @@ data "ct_config" "worker" {
 }
 
 resource "aws_instance" "worker" {
-  user_data = data.ct_config.worker.rendered
+  user_data = data.butane_config.worker.rendered
 }
 ```
 

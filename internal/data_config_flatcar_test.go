@@ -9,7 +9,7 @@ import (
 // Flatcar variant, v1.1.0
 
 const flatcarV11Resource = `
-data "ct_config" "flatcar" {
+data "butane_config" "flatcar" {
   pretty_print = true
   strict = true
   content = <<EOT
@@ -30,7 +30,7 @@ EOT
 `
 
 const flatcarV11WithSnippets = `
-data "ct_config" "flatcar-snippets" {
+data "butane_config" "flatcar-snippets" {
   pretty_print = true
   strict = true
   content = <<EOT
@@ -58,7 +58,7 @@ EOT
 `
 
 const flatcarV11WithSnippetsPrettyFalse = `
-data "ct_config" "flatcar-snippets" {
+data "butane_config" "flatcar-snippets" {
   pretty_print = false
   strict = true
   content = <<EOT
@@ -92,19 +92,19 @@ func TestButaneConfig_Flatcar_v1_1(t *testing.T) {
 			{
 				Config: flatcarV11Resource,
 				Check: r.ComposeTestCheckFunc(
-					r.TestCheckResourceAttr("data.ct_config.flatcar", "rendered", flatcarExpected),
+					r.TestCheckResourceAttr("data.butane_config.flatcar", "rendered", flatcarExpected),
 				),
 			},
 			{
 				Config: flatcarV11WithSnippets,
 				Check: r.ComposeTestCheckFunc(
-					r.TestCheckResourceAttr("data.ct_config.flatcar-snippets", "rendered", flatcarWithSnippetsExpected),
+					r.TestCheckResourceAttr("data.butane_config.flatcar-snippets", "rendered", flatcarWithSnippetsExpected),
 				),
 			},
 			{
 				Config: flatcarV11WithSnippetsPrettyFalse,
 				Check: r.ComposeTestCheckFunc(
-					r.TestCheckResourceAttr("data.ct_config.flatcar-snippets", "rendered", flatcarWithSnippetsPrettyFalseExpected),
+					r.TestCheckResourceAttr("data.butane_config.flatcar-snippets", "rendered", flatcarWithSnippetsPrettyFalseExpected),
 				),
 			},
 		},
@@ -114,7 +114,7 @@ func TestButaneConfig_Flatcar_v1_1(t *testing.T) {
 // Flatcar variant, v1.0.0
 
 const flatcarV10Resource = `
-data "ct_config" "flatcar" {
+data "butane_config" "flatcar" {
   pretty_print = true
   strict = true
   content = <<EOT
@@ -177,7 +177,7 @@ const flatcarExpected = `{
 }`
 
 const flatcarV10WithSnippets = `
-data "ct_config" "flatcar-snippets" {
+data "butane_config" "flatcar-snippets" {
   pretty_print = true
   strict = true
   content = <<EOT
@@ -241,7 +241,7 @@ const flatcarWithSnippetsExpected = `{
 }`
 
 const flatcarV10WithSnippetsPrettyFalse = `
-data "ct_config" "flatcar-snippets" {
+data "butane_config" "flatcar-snippets" {
   pretty_print = false
   strict = true
   content = <<EOT
@@ -277,19 +277,19 @@ func TestButaneConfig_Flatcar_v1_0(t *testing.T) {
 			{
 				Config: flatcarV10Resource,
 				Check: r.ComposeTestCheckFunc(
-					r.TestCheckResourceAttr("data.ct_config.flatcar", "rendered", flatcarExpected),
+					r.TestCheckResourceAttr("data.butane_config.flatcar", "rendered", flatcarExpected),
 				),
 			},
 			{
 				Config: flatcarV10WithSnippets,
 				Check: r.ComposeTestCheckFunc(
-					r.TestCheckResourceAttr("data.ct_config.flatcar-snippets", "rendered", flatcarWithSnippetsExpected),
+					r.TestCheckResourceAttr("data.butane_config.flatcar-snippets", "rendered", flatcarWithSnippetsExpected),
 				),
 			},
 			{
 				Config: flatcarV10WithSnippetsPrettyFalse,
 				Check: r.ComposeTestCheckFunc(
-					r.TestCheckResourceAttr("data.ct_config.flatcar-snippets", "rendered", flatcarWithSnippetsPrettyFalseExpected),
+					r.TestCheckResourceAttr("data.butane_config.flatcar-snippets", "rendered", flatcarWithSnippetsPrettyFalseExpected),
 				),
 			},
 		},
