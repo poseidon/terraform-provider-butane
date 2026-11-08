@@ -38,7 +38,8 @@ release: \
 	_output/plugin-linux-arm64.zip \
 	_output/plugin-darwin-amd64.zip \
 	_output/plugin-darwin-arm64.zip \
-	_output/plugin-windows-amd64.zip
+	_output/plugin-windows-amd64.zip \
+	_output/terraform-provider-butane_$(SEMVER)_manifest.json
 
 _output/plugin-%.zip: NAME=terraform-provider-butane_$(SEMVER)_$(subst -,_,$*)
 _output/plugin-%.zip: DEST=_output/$(NAME)
@@ -58,8 +59,12 @@ _output/windows-amd64/terraform-provider-butane: GOARGS = GOOS=windows GOARCH=am
 _output/%/terraform-provider-butane:
 	$(GOARGS) go build -o $@ github.com/poseidon/terraform-provider-butane
 
-release-sign:
-	cd _output; sha256sum *.zip > terraform-provider-butane_$(SEMVER)_SHA256SUMS
+_output/terraform-provider-butane_$(SEMVER)_manifest.json: terraform-registry-manifest.json
+	@mkdir -p _output
+	@cp $< $@
+
+release-sign: _output/terraform-provider-butane_$(SEMVER)_manifest.json
+	cd _output; sha256sum *.zip terraform-provider-butane_$(SEMVER)_manifest.json > terraform-provider-butane_$(SEMVER)_SHA256SUMS
 	gpg --default-key 0x8F515AD1602065C8 --detach-sign _output/terraform-provider-butane_$(SEMVER)_SHA256SUMS
 
 release-verify: NAME=_output/terraform-provider-butane
